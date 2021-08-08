@@ -47,6 +47,8 @@ namespace DotNetMiddleware
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseStaticFiles();
+
             app.UseSession();
 
             var routeBuilder = new RouteBuilder(app);
