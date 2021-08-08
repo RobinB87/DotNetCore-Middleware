@@ -17,10 +17,10 @@ namespace DotNetMiddleware
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            //if (env.IsDevelopment())
-            //{
-            //    app.UseDeveloperExceptionPage();
-            //}
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
 
             var newline = Environment.NewLine;
             app.Use(async (context, next) =>
@@ -29,6 +29,8 @@ namespace DotNetMiddleware
                 await next.Invoke();
                 await context.Response.WriteAsync($"Hello from component one again!{newline}");
             });
+
+            app.UseMyCustomMiddleware();
 
             app.Map("/mymapbranch", (appBuilder) =>
             {
