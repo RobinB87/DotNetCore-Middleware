@@ -27,6 +27,8 @@ namespace DotNetMiddleware
         {
             services.AddOptions();
 
+            services.AddCors();
+
             var myOptions = Configuration.GetSection("MyMiddlewareOptionsSection");
             services.Configure<MyCustomMiddlewareOptions>(o => o.OptionOne = myOptions["OptionOne"]);
         }
@@ -38,6 +40,11 @@ namespace DotNetMiddleware
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseCors((builder) =>
+            {
+                builder.WithOrigins("http://localhost:5000");
+            });
 
             var newline = Environment.NewLine;
             app.Use(async (context, next) =>
