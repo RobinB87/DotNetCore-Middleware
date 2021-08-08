@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -29,6 +30,8 @@ namespace DotNetMiddleware
 
             services.AddCors();
 
+            services.AddRouting();
+
             var myOptions = Configuration.GetSection("MyMiddlewareOptionsSection");
             services.Configure<MyCustomMiddlewareOptions>(o => o.OptionOne = myOptions["OptionOne"]);
         }
@@ -40,6 +43,18 @@ namespace DotNetMiddleware
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            var routeBuilder = new RouteBuilder(app);
+            routeBuilder.MapMiddlewareGet("greeting/{name}", appBuilder =>
+            {
+                appBuilder.Run(async (context) =>
+                {
+                    var name = context.GetRouteValue("name");
+                    await context.Response.WriteAsync($"Hey there, {name}");
+                });
+            });
+
+            app.UseRouter(routeBuilder.Build());
 
             app.UseCors((builder) =>
             {
