@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace DotNetMiddleware
 {
@@ -21,9 +22,38 @@ namespace DotNetMiddleware
             //    app.UseDeveloperExceptionPage();
             //}
 
+            var newline = Environment.NewLine;
+            app.Use(async (context, next) =>
+            {
+                await context.Response.WriteAsync($"Hello from component one!{newline}");
+                await next.Invoke();
+                await context.Response.WriteAsync($"Hello from component one again!{newline}");
+            });
+
+            app.Map("/mymapbranch", (appBuilder) =>
+            {
+                appBuilder.Use(async (context, next) =>
+                {
+                    await next.Invoke();
+                });
+
+                appBuilder.Run(async (context) =>
+                {
+                    await context.Response.WriteAsync($"Greetings from my Map branche!{newline}");
+                });
+            });
+
+            app.MapWhen(context => context.Request.Query.ContainsKey("querybranch"), (appBuilder) =>
+            {
+                appBuilder.Run(async (context) =>
+                {
+                    await context.Response.WriteAsync($"You have arrived at your MapWhen branch!{newline}");
+                });
+            });
+
             app.Run(async (context) =>
             {
-                await context.Response.WriteAsync("Hello World!");
+                await context.Response.WriteAsync($"Hello World!{newline}");
             });
         }
     }
