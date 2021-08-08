@@ -72,7 +72,7 @@ namespace DotNetMiddleware
 
             app.Run(async (context) =>
             {
-                await context.Response.WriteAsync($"Hello World!{newline}");
+                await context.Response.WriteAsync($"Hello World! {context.Items["message"]}{newline}");
             });
         }
     }

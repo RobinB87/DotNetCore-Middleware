@@ -25,6 +25,8 @@ namespace DotNetMiddleware
             //var logger = _loggerFactory.CreateLogger("My own logger..");
             //logger.LogInformation("My middleware class is handling the request");
 
+            context.Items["message"] = "The weather is great today!";
+
             //await context.Response.WriteAsync("My middleware class is handling the request");
             await context.Response.WriteAsync(_options.Value.OptionOne + "<br>");
 
