@@ -32,6 +32,9 @@ namespace DotNetMiddleware
 
             services.AddRouting();
 
+            services.AddDistributedMemoryCache();
+            services.AddSession();
+
             var myOptions = Configuration.GetSection("MyMiddlewareOptionsSection");
             services.Configure<MyCustomMiddlewareOptions>(o => o.OptionOne = myOptions["OptionOne"]);
         }
@@ -43,6 +46,8 @@ namespace DotNetMiddleware
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseSession();
 
             var routeBuilder = new RouteBuilder(app);
             routeBuilder.MapMiddlewareGet("greeting/{name}", appBuilder =>
@@ -64,9 +69,13 @@ namespace DotNetMiddleware
             var newline = Environment.NewLine;
             app.Use(async (context, next) =>
             {
+                context.Session.SetString("my message", "you have completed setting a string in session");
+
                 await context.Response.WriteAsync($"Hello from component one!{newline}");
                 await next.Invoke();
                 await context.Response.WriteAsync($"Hello from component one again!{newline}");
+
+                context.Session.GetString("my message");
             });
 
             app.UseMyCustomMiddleware();
