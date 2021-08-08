@@ -103,6 +103,13 @@ namespace DotNetMiddleware
                 });
             });
 
+            // Eg: http://localhost:5000/test.timetable
+            app.MapWhen(context => context.Request.Path.ToString().EndsWith(".timetable"),
+                appBuilder =>
+                {
+                    appBuilder.UseMyHandlerMiddleware();
+                });
+
             app.Run(async (context) =>
             {
                 await context.Response.WriteAsync($"Hello World! {context.Items["message"]}{newline}");
